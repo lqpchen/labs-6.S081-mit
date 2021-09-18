@@ -31,12 +31,14 @@ ls(char *path)
   struct stat st;
 
   if((fd = open(path, 0)) < 0){
-    fprintf(2, "ls: cannot open %s\n", path);
+    //fprintf(2, "ls: cannot open %s\n", path);
+    printf("ls: cannot open %s\n", path);
     return;
   }
 
   if(fstat(fd, &st) < 0){
-    fprintf(2, "ls: cannot stat %s\n", path);
+    //fprintf(2, "ls: cannot stat %s\n", path);
+    printf("ls: cannot stat %s\n", path);
     close(fd);
     return;
   }
