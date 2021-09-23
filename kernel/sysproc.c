@@ -7,6 +7,11 @@
 #include "spinlock.h"
 #include "proc.h"
 
+#include "sysinfo.h"
+
+extern int numproc(void);
+extern int freemem(void);
+
 uint64
 sys_exit(void)
 {
@@ -94,4 +99,37 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+uint64
+sys_trace(void)
+{
+  int mask;
+
+  // read argument
+  if(argint(0, &mask) < 0)
+    return -1;
+
+  myproc()->mask = mask;
+
+  return 0;
+}
+
+uint64
+sys_sysinfo(void)
+{
+  struct proc *p = myproc();
+  uint64 addr;
+  struct sysinfo info;
+
+  if(argaddr(0, &addr) < 0)
+    return -1;
+
+  info.nproc = numproc();
+  info.freemem = freemem();
+
+  if(copyout(p->pagetable, addr, (char *)&info, sizeof(info)) < 0)
+    return -1;
+  
+  return 0;
 }

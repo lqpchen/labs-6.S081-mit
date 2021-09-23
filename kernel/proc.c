@@ -85,6 +85,21 @@ allocpid() {
   return pid;
 }
 
+// count the number of processes that are not UNUSED
+int
+numproc(void)
+{
+  struct proc *p;
+  int nproc = 0;
+
+  for(p = proc; p < &proc[NPROC]; p++) {
+    if(p->state != UNUSED) {
+      ++nproc;
+    } 
+  }
+  return nproc;
+}
+
 // Look in the process table for an UNUSED proc.
 // If found, initialize state required to run in the kernel,
 // and return with p->lock held.
@@ -292,6 +307,8 @@ fork(void)
   safestrcpy(np->name, p->name, sizeof(p->name));
 
   pid = np->pid;
+
+  np->mask = p->mask;
 
   np->state = RUNNABLE;
 
